@@ -44,7 +44,6 @@ $mhs = mysqli_fetch_assoc($mhs_query);
                 echo "<td>" . $frs['sks'] . "</td>";
                 echo "<td>" . $frs['semester'] . "</td>";
                 echo "<td>";
-                // Form untuk update status persetujuan
                 echo "<form action='proses_edit.php' method='POST' style='display:inline;'>";
                 echo "<input type='hidden' name='id_frs' value='".$frs['id_frs']."'>";
                 echo "<input type='hidden' name='nim' value='".$nim."'>";
