@@ -1,47 +1,25 @@
+<?php session_start(); if(isset($_SESSION['role'])) { header('Location: ' . $_SESSION['role'] . '_dashboard.php'); exit(); } ?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manajemen Gerbang ITK</title>
+    <title>Login - Gerbang ITK</title>
     <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>🚪 Sistem Manajemen Gerbang ITK</h1>
-        <p class="subtitle">Aplikasi CRUD untuk Mengelola Log Akses</p>
-        
-        <div class="info-box">
-            <h3>📚 Tentang Aplikasi</h3>
-            <p>Aplikasi ini adalah implementasi operasi CRUD (Create, Read, Update, Delete) untuk mengelola data log akses gerbang oleh mahasiswa dan dosen di lingkungan Institut Teknologi Kalimantan.</p>
-        </div>
-        
-        <div class="menu-grid">
-            <a href="crud/create.php" class="menu-item create">
-                <h3>➕ CREATE</h3>
-                <p>Tambah data log akses baru</p>
-            </a>
-            
-            <a href="crud/read.php" class="menu-item read">
-                <h3>📖 READ</h3>
-                <p>Lihat & cari data log akses</p>
-            </a>
-            
-            <a href="crud/read.php" class="menu-item update">
-                <h3>✏ UPDATE</h3>
-                <p>Edit data log akses</p>
-            </a>
-            
-            <a href="crud/read.php" class="menu-item delete">
-                <h3>🗑 DELETE</h3>
-                <p>Hapus data log akses</p>
-            </a>
-        </div>
-                
-        <div class="footer">
-            <p><strong>Database:</strong> manajemen_gerbang_itk | <strong>Tabel Utama:</strong> akses</p>
-            <p>Pastikan database sudah dibuat menggunakan file <code>database.sql</code></p>
-        </div>
+    <div class="container login-box">
+        <h2>Selamat Datang di Gerbang ITK</h2>
+        <?php if(isset($_GET['error'])) { echo '<p style="color:red;">Email atau password salah!</p>'; } ?>
+        <form action="login_proses.php" method="POST">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" required>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+        </form>
     </div>
 </body>
 </html>

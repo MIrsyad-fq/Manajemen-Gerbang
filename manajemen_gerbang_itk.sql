@@ -1,58 +1,55 @@
--- Membuat database baru
-CREATE DATABASE IF NOT EXISTS manajemen_gerbang_itk;
+-- Menggunakan database yang sudah ada
 USE manajemen_gerbang_itk;
 
--- Tabel 1: prodi
-CREATE TABLE prodi (
-    no_prodi VARCHAR(10) PRIMARY KEY,
-    nama_prodi VARCHAR(100) NOT NULL
-);
+-- Menghapus tabel lama jika ada untuk menghindari error
+DROP TABLE IF EXISTS frs, mahasiswa, dosen;
 
--- Tabel 2: dosen
+-- =================================================================
+-- STRUKTUR TABEL
+-- =================================================================
+
+-- Tabel Dosen (DENGAN KOLOM PASSWORD)
 CREATE TABLE dosen (
     nip VARCHAR(25) PRIMARY KEY,
     nama_dosen VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE,
-    no_prodi VARCHAR(10),
-    FOREIGN KEY (no_prodi) REFERENCES prodi(no_prodi)
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL -- Kolom ini ditambahkan
 );
 
--- Tabel 3: mahasiswa
+-- Tabel Mahasiswa (DENGAN KOLOM PASSWORD)
 CREATE TABLE mahasiswa (
     nim VARCHAR(15) PRIMARY KEY,
     nama_mahasiswa VARCHAR(100) NOT NULL,
-    angkatan INT,
-    no_prodi VARCHAR(10),
-    FOREIGN KEY (no_prodi) REFERENCES prodi(no_prodi)
+    angkatan INT NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL, -- Kolom ini ditambahkan
+    nip_dosen_wali VARCHAR(25),
+    FOREIGN KEY (nip_dosen_wali) REFERENCES dosen(nip)
 );
 
--- Tabel 4: akses (Tabel utama untuk CRUD)
-CREATE TABLE akses (
-    id_akses INT AUTO_INCREMENT PRIMARY KEY,
-    id_pengguna VARCHAR(25) NOT NULL,
-    tipe_pengguna ENUM('Mahasiswa', 'Dosen') NOT NULL,
-    `timestamp` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    tipe_akses ENUM('Masuk', 'Keluar') NOT NULL,
-    status_akses ENUM('Berhasil', 'Gagal') NOT NULL,
-    keterangan TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+-- Tabel FRS (Formulir Rencana Studi)
+CREATE TABLE frs (
+    id_frs INT AUTO_INCREMENT PRIMARY KEY,
+    nim VARCHAR(15),
+    kode_matkul VARCHAR(10) NOT NULL,
+    nama_matkul VARCHAR(100) NOT NULL,
+    sks INT NOT NULL,
+    status_frs ENUM('Menunggu', 'Disetujui', 'Ditolak') DEFAULT 'Menunggu',
+    FOREIGN KEY (nim) REFERENCES mahasiswa(nim) ON DELETE CASCADE
 );
 
--- Memasukkan data contoh
-INSERT INTO prodi (no_prodi, nama_prodi) VALUES
-('10', 'Sistem Informasi'),
-('11', 'Informatika');
+-- =================================================================
+-- DATA DUMMY (DENGAN ISI PASSWORD)
+-- Password untuk semua akun: 'password123'
+-- =================================================================
+INSERT INTO dosen (nip, nama_dosen, email, password) VALUES
+('198503152008122002', 'Dr. Ani Wijaya', 'ani.wijaya@itk.ac.id', MD5('password123'));
 
-INSERT INTO dosen (nip, nama_dosen, email, no_prodi) VALUES
-('198503152008122002', 'Ani Wijaya', 'ani.w@itk.ac.id', '10'),
-('198805202012031003', 'Charlie D.', 'charlie.d@itk.ac.id', '11');
+INSERT INTO mahasiswa (nim, nama_mahasiswa, angkatan, email, password, nip_dosen_wali) VALUES
+('10241004', 'Adelia Isra Ekaputri', 2024, 'adelia.isra@itk.ac.id', MD5('password123'), '198503152008122002'),
+('10241042', 'Moh. Irsyad Fiqi', 2024, 'irsyad.fiqi@itk.ac.id', MD5('password123'), '198503152008122002');
 
-INSERT INTO mahasiswa (nim, nama_mahasiswa, angkatan, no_prodi) VALUES
-('10241004', 'Adelia Isra Ekaputri', 2024, '10'),
-('11241001', 'Kevin Sanjaya', 2024, '11');
-
-INSERT INTO akses (id_pengguna, tipe_pengguna, tipe_akses, status_akses, keterangan) VALUES
-('10241004', 'Mahasiswa', 'Masuk', 'Berhasil', 'Akses pagi'),
-('198503152008122002', 'Dosen', 'Masuk', 'Berhasil', ''),
-('11241001', 'Mahasiswa', 'Keluar', 'Gagal', 'Kartu tidak terbaca');
+INSERT INTO frs (nim, kode_matkul, nama_matkul, sks, status_frs) VALUES
+('10241004', 'SI-101', 'Algoritma Pemrograman', 3, 'Disetujui'),
+('10241004', 'SI-102', 'Basis Data', 3, 'Menunggu'),
+('10241042', 'IF-101', 'Kalkulus I', 4, 'Ditolak');
