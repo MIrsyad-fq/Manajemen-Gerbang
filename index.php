@@ -17,8 +17,10 @@
             <div class="form-group">
                 <label>Password</label>
                 <input type="password" name="password" required>
-                <button type="submit" class="btn btn-primary">Login</button>
             </div>
+            <div class="form-group">
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
         </form>
     </div>
 </body>

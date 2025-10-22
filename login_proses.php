@@ -4,37 +4,24 @@ require 'config/database.php';
 
 $email = mysqli_real_escape_string($koneksi, $_POST['email']);
 $password = MD5($_POST['password']);
+$role = $_POST['role'];
 
-// 1. Coba login sebagai Dosen (Admin) terlebih dahulu
-$query_dosen = "SELECT * FROM dosen WHERE email='$email' AND password='$password'";
-$result_dosen = mysqli_query($koneksi, $query_dosen);
-
-if (mysqli_num_rows($result_dosen) > 0) {
-    // Jika berhasil, set session sebagai dosen dan arahkan ke dashboard admin
-    $user = mysqli_fetch_assoc($result_dosen);
-    $_SESSION['user_id'] = $user['nip'];
-    $_SESSION['nama'] = $user['nama_dosen'];
-    $_SESSION['role'] = 'dosen';
-    header("Location: admin_dashboard.php");
-    exit();
+if ($role == 'dosen') {
+    $table = 'dosen'; $id_col = 'nip'; $name_col = 'nama_dosen'; $dashboard = 'admin_dashboard.php';
+} else {
+    $table = 'mahasiswa'; $id_col = 'nim'; $name_col = 'nama_mahasiswa'; $dashboard = 'mahasiswa_dashboard.php';
 }
 
-// 2. Jika gagal sebagai dosen, coba login sebagai Mahasiswa
-$query_mahasiswa = "SELECT * FROM mahasiswa WHERE email='$email' AND password='$password'";
-$result_mahasiswa = mysqli_query($koneksi, $query_mahasiswa);
+$query = "SELECT * FROM $table WHERE email='$email' AND password='$password'";
+$result = mysqli_query($koneksi, $query);
 
-if (mysqli_num_rows($result_mahasiswa) > 0) {
-    // Jika berhasil, set session sebagai mahasiswa dan arahkan ke dashboard mahasiswa
-    $user = mysqli_fetch_assoc($result_mahasiswa);
-    $_SESSION['user_id'] = $user['nim'];
-    $_SESSION['nama'] = $user['nama_mahasiswa'];
-    $_SESSION['role'] = 'mahasiswa';
-    header("Location: mahasiswa_dashboard.php");
-    exit();
+if (mysqli_num_rows($result) > 0) {
+    $user = mysqli_fetch_assoc($result);
+    $_SESSION['user_id'] = $user[$id_col];
+    $_SESSION['nama'] = $user[$name_col];
+    $_SESSION['role'] = $role;
+    header("Location: $dashboard");
+} else {
+    header("Location: index.php?error=1");
 }
-
-// 3. Jika keduanya gagal, kembali ke halaman login dengan pesan error
-header("Location: index.php?error=1");
-exit();
-
 ?>

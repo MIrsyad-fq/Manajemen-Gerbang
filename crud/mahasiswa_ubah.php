@@ -27,7 +27,7 @@ $frs_query = mysqli_query($koneksi, "SELECT * FROM frs WHERE nim='$nim'");
 ?>
 <!DOCTYPE html><html lang="id"><head><title>Ubah Data</title><link rel="stylesheet" href="../assets/style.css"></head>
 <body><div class="container"><h2>Ubah Data Mahasiswa & FRS</h2>
-<form action="ubah_data.php?nim=<?php echo $nim; ?>" method="POST">
+<form action="mahasiswa_ubah.php?nim=<?php echo $nim; ?>" method="POST">
     <h4>Data Mahasiswa</h4>
     <div class="form-group"><label>Nama</label><input type="text" name="nama_mahasiswa" value="<?php echo $mhs['nama_mahasiswa']; ?>"></div>
     <div class="form-group"><label>Angkatan</label><input type="number" name="angkatan" value="<?php echo $mhs['angkatan']; ?>"></div>
@@ -39,13 +39,21 @@ $frs_query = mysqli_query($koneksi, "SELECT * FROM frs WHERE nim='$nim'");
     
     <h4 style="margin-top:30px;">Persetujuan FRS</h4>
     <table><thead><tr><th>Nama MK</th><th>Status</th></tr></thead>
-    <tbody><?php while ($frs = mysqli_fetch_assoc($frs_query)): ?><tr>
-        <td><?php echo $frs['nama_matkul']; ?></td>
-        <td><select name="frs_status[<?php echo $frs['id_frs']; ?>]">
-            <option value="Menunggu" <?php if($frs['status_frs'] == 'Menunggu') echo 'selected'; ?>>Menunggu</option>
-            <option value="Disetujui" <?php if($frs['status_frs'] == 'Disetujui') echo 'selected'; ?>>Disetujui</option>
-            <option value="Ditolak" <?php if($frs['status_frs'] == 'Ditolak') echo 'selected'; ?>>Ditolak</option>
-        </select></td>
-    </tr><?php endwhile; ?></tbody></table>
+    <tbody>
+        <?php if(mysqli_num_rows($frs_query) > 0): ?>
+            <?php while ($frs = mysqli_fetch_assoc($frs_query)): ?>
+            <tr>
+                <td><?php echo $frs['nama_matkul']; ?></td>
+                <td><select name="frs_status[<?php echo $frs['id_frs']; ?>]">
+                    <option value="Menunggu" <?php if($frs['status_frs'] == 'Menunggu') echo 'selected'; ?>>Menunggu</option>
+                    <option value="Disetujui" <?php if($frs['status_frs'] == 'Disetujui') echo 'selected'; ?>>Disetujui</option>
+                    <option value="Ditolak" <?php if($frs['status_frs'] == 'Ditolak') echo 'selected'; ?>>Ditolak</option>
+                </select></td>
+            </tr>
+            <?php endwhile; ?>
+        <?php else: ?>
+            <tr><td colspan="2" style="text-align:center;">Mahasiswa ini belum mengajukan FRS.</td></tr>
+        <?php endif; ?>
+    </tbody></table>
     <div style="margin-top:20px;"><button type="submit" class="btn btn-success">Update Data</button> <a href="../admin_dashboard.php" class="btn btn-secondary">Batal</a></div>
 </form></div></body></html>
